@@ -16,7 +16,7 @@ import parse
 
 
 Paper = namedtuple('Paper', 'title url')
-direct_url_format = parse.compile('http://scholar.google.nl/scholar_url?url={url}&hl=en&{garbage}')
+direct_url_format = parse.compile('http{s}://scholar.google.nl/scholar_url?url={url}&hl=en&{garbage}')
 indirect_url_format = parse.compile('{url}&hist={garbage}')
 
 
@@ -60,8 +60,10 @@ def get_papers_from_email(mail, link_class='gse_alrt_title'):
         raise TypeError("'msg' incorrectly parsed, None returned")
 
     soup = BeautifulSoup(mail_html, 'html.parser')
-    return [Paper(link.text.title(), clean_url(link.get('href')))
-            for link in soup.find_all('a', link_class)]
+    return [
+        Paper(link.text.title(), clean_url(link.get('href')))
+        for link in soup.find_all('a', link_class)
+    ]
 
 
 def write_papers_to_csv(unique_papers, fname='papers.csv'):
