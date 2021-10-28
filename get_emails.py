@@ -3,6 +3,7 @@
 https://medium.com/@sdoshi579/to-read-emails-and-download-attachments-in-python-6d7d6b60269
 """
 
+import argparse
 from collections import namedtuple
 import csv
 import email
@@ -20,8 +21,8 @@ direct_url_format = parse.compile('http{s}://scholar.google.nl/scholar_url?url={
 indirect_url_format = parse.compile('{url}&hist={garbage}')
 
 
-def main():
-    emails = get_and_delete_all_emails_from('Papers/Scholar Alerts')
+def main(args):
+    emails = get_and_delete_all_emails_from(args.folder, args.server, args.port, args.delete)
 
     unique_papers = filter_unique_papers_from_emails(emails)
 
@@ -35,7 +36,7 @@ def filter_unique_papers_from_emails(emails):
     return unique_papers
 
 
-def get_and_delete_all_emails_from(folder, server='mail.campus.leidenuniv.nl', port=993, delete=False):
+def get_and_delete_all_emails_from(folder, server, port=993, delete=False):
     if ' ' in folder:
         folder = f'"{folder}"'
 
@@ -91,4 +92,16 @@ def clean_url(url):
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--server', type=str, default='mail.campus.leidenuniv.nl',
+                        help='Address of the mailserver to use. Default: mail.campus.leidenuniv.nl')
+    parser.add_argument('--port', type=int, default=993,
+                        help='At which port to connect to the mailserver. Default: 993')
+    parser.add_argument('--folder', type=str, default='Papers/Scholar Alerts',
+                        help='Mailbox folder containing all Scholar Alert emails. Default: "Papers/Scholar Alerts"')
+    parser.add_argument('--delete', '-d', action='store_true',
+                        help='Whether to delete emails after processing. Default: False')
+
+    args = parser.parse_args()
+
+    main(args)
