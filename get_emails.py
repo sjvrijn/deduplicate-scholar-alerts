@@ -22,12 +22,17 @@ indirect_url_format = parse.compile('{url}&hist={garbage}')
 
 def main():
     emails = get_and_delete_all_emails_from('Papers/Scholar Alerts')
-    all_papers = list(flatten(get_papers_from_email(mail) for mail in emails))
-    unique_papers = set(all_papers)
 
-    print(f'Found {len(unique_papers)} ({len(all_papers)}) papers in {len(emails)} emails')
+    unique_papers = filter_unique_papers_from_emails(emails)
 
     write_papers_to_csv(unique_papers)
+
+
+def filter_unique_papers_from_emails(emails):
+    all_papers = list(flatten(get_papers_from_email(mail) for mail in emails))
+    unique_papers = set(all_papers)
+    print(f'Found {len(unique_papers)} ({len(all_papers)}) papers in {len(emails)} emails')
+    return unique_papers
 
 
 def get_and_delete_all_emails_from(folder, server='mail.campus.leidenuniv.nl', port=993, delete=False):
