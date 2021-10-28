@@ -21,7 +21,9 @@ indirect_url_format = parse.compile('{url}&hist={garbage}')
 
 
 def main(args):
-    emails = get_and_delete_all_emails_from(args.folder, args.server, args.port, args.delete)
+    emails = get_and_delete_all_emails_from(
+        args.folder, args.server, args.port, args.delete, args.username, args.password
+    )
 
     unique_papers = filter_unique_papers_from_emails(emails)
 
@@ -35,12 +37,14 @@ def filter_unique_papers_from_emails(emails):
     return unique_papers
 
 
-def get_and_delete_all_emails_from(folder, server, port=993, delete=False):
+def get_and_delete_all_emails_from(folder, server, port=993, delete=False, user=None, pwd=None):
     if ' ' in folder:
         folder = f'"{folder}"'
 
     with imaplib.IMAP4_SSL(server, port) as mail:
-        mail.login(input("Username: "), getpass("Password: "))
+        user = input("Username: ") if user is None else user
+        pwd = getpass("Password: ") if pwd is None else pwd
+        mail.login(user, pwd)
 
         mail.select(folder)
         res, data = mail.search(None, 'ALL')
@@ -98,6 +102,10 @@ if __name__ == '__main__':
                         help='At which port to connect to the mailserver. Default: 993')
     parser.add_argument('--folder', type=str, default='Papers/Scholar Alerts',
                         help='Mailbox folder containing all Scholar Alert emails. Default: "Papers/Scholar Alerts"')
+    parser.add_argument('--username', type=str,
+                        help='Username of the email account to log into')
+    parser.add_argument('--password', type=str,
+                        help='Password of the email account to log into')
     parser.add_argument('--delete', '-d', action='store_true',
                         help='Whether to delete emails after processing. Default: False')
     parser.add_argument('--output', '-o', type=str, default='papers.csv',
