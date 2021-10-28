@@ -9,7 +9,6 @@ import csv
 import email
 from getpass import getpass
 import imaplib
-from pathlib import Path
 
 from bs4 import BeautifulSoup
 from more_itertools import flatten
@@ -26,7 +25,7 @@ def main(args):
 
     unique_papers = filter_unique_papers_from_emails(emails)
 
-    write_papers_to_csv(unique_papers)
+    write_papers_to_csv(unique_papers, fname=args.output)
 
 
 def filter_unique_papers_from_emails(emails):
@@ -101,6 +100,8 @@ if __name__ == '__main__':
                         help='Mailbox folder containing all Scholar Alert emails. Default: "Papers/Scholar Alerts"')
     parser.add_argument('--delete', '-d', action='store_true',
                         help='Whether to delete emails after processing. Default: False')
+    parser.add_argument('--output', '-o', type=str, default='papers.csv',
+                        help='Name of the output file. Default: papers.csv')
 
     args = parser.parse_args()
 
