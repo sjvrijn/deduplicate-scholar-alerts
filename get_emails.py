@@ -30,7 +30,7 @@ def main():
     write_papers_to_csv(unique_papers)
 
 
-def get_and_delete_all_emails_from(folder, server='mail.campus.leidenuniv.nl', port=993):
+def get_and_delete_all_emails_from(folder, server='mail.campus.leidenuniv.nl', port=993, delete=False):
     if ' ' in folder:
         folder = f'"{folder}"'
 
@@ -41,10 +41,11 @@ def get_and_delete_all_emails_from(folder, server='mail.campus.leidenuniv.nl', p
         res, data = mail.search(None, 'ALL')
         emails = [get_email(num, mail) for num in data[0].split()]
 
-        # delete all emails once successfully fetched
-        for num in data[0].split():
-            mail.store(num, '+FLAGS', '\\Deleted')
-        mail.expunge()
+        if delete:
+            # delete all emails once successfully fetched
+            for num in data[0].split():
+                mail.store(num, '+FLAGS', '\\Deleted')
+            mail.expunge()
 
     return emails
 
