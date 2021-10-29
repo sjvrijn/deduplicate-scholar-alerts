@@ -1,4 +1,4 @@
-# Multi-Level Co-Surrogates
+# Deduplicate Google Scholar Alerts Utility
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
